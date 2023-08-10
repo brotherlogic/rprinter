@@ -87,3 +87,7 @@ func runReceiptPrint() error {
 
 	return nil
 }
+
+func main() {
+	runReceiptPrint()
+}
