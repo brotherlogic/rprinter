@@ -94,6 +94,9 @@ func runReceiptPrint() error {
 		_, err = client.Ack(ctx, &pbp.AckRequest{
 			Id: job.GetId(),
 		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
