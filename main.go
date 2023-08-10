@@ -16,28 +16,28 @@ import (
 
 func localPrint(ctx context.Context, lines []string) error {
 	//os.Create("home/simon/print.txt")
-	handle, err := os.CreateTemp("rprint", "printdetails")
+	handle, err := os.CreateTemp("", "printdetails")
 	if err != nil {
-		return fmt.Errorf("Unable to create temporary file: %w", err)
+		return fmt.Errorf("unable to create temporary file: %w", err)
 	}
 	for _, line := range lines {
 		handle.WriteString(fmt.Sprintf("%v\n", line))
 	}
 	err = handle.Sync()
 	if err != nil {
-		return fmt.Errorf("Unable to sync file: %w", err)
+		return fmt.Errorf("unable to sync file: %w", err)
 	}
 	err = handle.Close()
 	if err != nil {
-		return fmt.Errorf("Unable to close file: %w", err)
+		return fmt.Errorf("unable to close file: %w", err)
 	}
 
-	cmd := exec.Command("lp", fmt.Sprintf("%v/%v", os.TempDir(), handle.Name()))
+	cmd := exec.Command("lp", fmt.Sprintf("%v", handle.Name()))
 	output := ""
 	out, err := cmd.StdoutPipe()
 
 	if err != nil {
-		return fmt.Errorf("Error in the now resolved actual stdout: %w", err)
+		return fmt.Errorf("error in the now resolved actual stdout: %w", err)
 	}
 
 	if out != nil {
@@ -53,7 +53,7 @@ func localPrint(ctx context.Context, lines []string) error {
 	cmd.Start()
 	err = cmd.Wait()
 	if err != nil {
-		return fmt.Errorf("Error in running command %w (output: %v)", err, output)
+		return fmt.Errorf("error in running command %w (output: %v)", err, output)
 	}
 
 	return err
