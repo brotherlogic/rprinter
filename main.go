@@ -95,7 +95,7 @@ func runReceiptPrint() error {
 			Id: job.GetId(),
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("ACK error on %v -> %w", job.GetId(), err)
 		}
 	}
 
@@ -105,6 +105,6 @@ func runReceiptPrint() error {
 func main() {
 	err := runReceiptPrint()
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		log.Fatalf("Error: %w", err)
 	}
 }
