@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"time"
@@ -61,7 +62,7 @@ func runReceiptPrint() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	conn, err := grpc.Dial("printer.brotherlogic-backend.com:8000")
+	conn, err := grpc.Dial("print.brotherlogic-backend.com:80")
 	if err != nil {
 		return err
 	}
@@ -89,5 +90,8 @@ func runReceiptPrint() error {
 }
 
 func main() {
-	runReceiptPrint()
+	err := runReceiptPrint()
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
 }
