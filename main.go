@@ -84,7 +84,8 @@ func runReceiptPrint() error {
 	}
 
 	for _, job := range jobs.GetJobs() {
-		localPrint(ctx, job.GetLines())
+		err = localPrint(ctx, job.GetLines())
+		return err
 	}
 
 	return nil
