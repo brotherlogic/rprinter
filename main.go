@@ -11,6 +11,7 @@ import (
 
 	pbp "github.com/brotherlogic/printqueue/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func localPrint(ctx context.Context, lines []string) error {
@@ -62,7 +63,7 @@ func runReceiptPrint() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	conn, err := grpc.Dial("print.brotherlogic-backend.com:80")
+	conn, err := grpc.Dial("print.brotherlogic-backend.com:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
