@@ -87,7 +87,13 @@ func runReceiptPrint() error {
 
 	for _, job := range jobs.GetJobs() {
 		err = localPrint(ctx, job.GetLines())
-		return err
+		if err != nil {
+			return err
+		}
+
+		_, err = client.Ack(ctx, &pbp.AckRequest{
+			Id: job.GetId(),
+		})
 	}
 
 	return nil
