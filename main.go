@@ -32,7 +32,7 @@ func localPrint(ctx context.Context, lines []string) error {
 		return fmt.Errorf("Unable to close file: %w", err)
 	}
 
-	cmd := exec.Command("lp", handle.Name())
+	cmd := exec.Command("lp", fmt.Sprintf("%v/%v", os.TempDir(), handle.Name()))
 	output := ""
 	out, err := cmd.StdoutPipe()
 
