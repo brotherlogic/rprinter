@@ -92,7 +92,8 @@ func runReceiptPrint() error {
 		}
 
 		_, err = client.Ack(ctx, &pbp.AckRequest{
-			Id: job.GetId(),
+			Id:      job.GetId(),
+			AckType: pbp.Destination_DESTINATION_RECEIPT,
 		})
 		if err != nil {
 			return fmt.Errorf("ACK error on %v -> %w", job.GetId(), err)
