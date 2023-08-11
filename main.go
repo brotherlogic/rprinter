@@ -105,6 +105,6 @@ func runReceiptPrint() error {
 func main() {
 	err := runReceiptPrint()
 	if err != nil {
-		log.Fatalf("Error: %w", err)
+		log.Fatalf("Error: %v", err)
 	}
 }
