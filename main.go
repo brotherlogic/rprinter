@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"log"
@@ -33,27 +32,10 @@ func localPrint(ctx context.Context, lines []string) error {
 	}
 
 	cmd := exec.Command("lp", fmt.Sprintf("%v", handle.Name()))
-	output := ""
-	out, err := cmd.StdoutPipe()
 
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("error in the now resolved actual stdout: %w", err)
-	}
-
-	if out != nil {
-		scanner := bufio.NewScanner(out)
-		go func() {
-			for scanner != nil && scanner.Scan() {
-				output += scanner.Text()
-			}
-			out.Close()
-		}()
-	}
-
-	cmd.Start()
-	err = cmd.Wait()
-	if err != nil {
-		return fmt.Errorf("error in running command %w (output: %v)", err, output)
+		return fmt.Errorf("error in running command %w (output: %v)", err, string(out))
 	}
 
 	log.Printf("Printed %v", handle.Name())
