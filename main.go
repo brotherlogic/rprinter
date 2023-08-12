@@ -14,6 +14,10 @@ import (
 )
 
 func localPrint(ctx context.Context, lines []string) error {
+	// Silent fail an empty request
+	if len(lines) == 0 {
+		return nil
+	}
 	//os.Create("home/simon/print.txt")
 	handle, err := os.CreateTemp("", "printdetails")
 	if err != nil {
