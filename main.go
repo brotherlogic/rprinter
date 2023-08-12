@@ -35,7 +35,7 @@ func localPrint(ctx context.Context, lines []string) error {
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("error in running command %w (output: %v) on %v", err, string(out), handle.Name())
+		return fmt.Errorf("error in running command %w (output: %v) on %v from %v", err, string(out), handle.Name(), lines)
 	}
 
 	log.Printf("Printed %v", handle.Name())
