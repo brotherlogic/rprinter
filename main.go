@@ -53,7 +53,7 @@ func runReceiptPrint() error {
 
 	conn, err := grpc.Dial("print.brotherlogic-backend.com:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		return err
+		return fmt.Errorf("conneciton error: %w", err)
 	}
 
 	hostname, err := os.Hostname()
@@ -68,7 +68,7 @@ func runReceiptPrint() error {
 	})
 
 	if err != nil {
-		return err
+		return fmt.Errorf("register error: %w", err)
 	}
 
 	for _, job := range jobs.GetJobs() {
