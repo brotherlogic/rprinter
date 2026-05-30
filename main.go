@@ -23,7 +23,6 @@ func localPrint(ctx context.Context, lines []string) error {
 	if err != nil {
 		return fmt.Errorf("unable to create temporary file: %w", err)
 	}
-	defer os.Remove(handle.Name())
 	for _, line := range lines {
 		handle.WriteString(fmt.Sprintf("%v\n", line))
 	}
