@@ -23,6 +23,7 @@ func localPrint(ctx context.Context, lines []string) error {
 	if err != nil {
 		return fmt.Errorf("unable to create temporary file: %w", err)
 	}
+	defer os.Remove(handle.Name())
 	for _, line := range lines {
 		handle.WriteString(fmt.Sprintf("%v\n", line))
 	}
@@ -84,6 +85,9 @@ func runReceiptPrint() error {
 		if err != nil {
 			return fmt.Errorf("ACK error on %v -> %w", job.GetId(), err)
 		}
+
+		// Allow time for the physical printer to finish printing before spooling the next job
+		time.Sleep(2 * time.Second)
 	}
 
 	return nil
