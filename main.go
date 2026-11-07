@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +12,10 @@ import (
 	pbp "github.com/brotherlogic/printqueue/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+)
+
+var (
+	ackOnly = flag.Bool("ack_only", false, "Acknowledge all print jobs without actually printing them")
 )
 
 func localPrint(ctx context.Context, lines []string) error {
@@ -72,9 +77,13 @@ func runReceiptPrint() error {
 	}
 
 	for _, job := range jobs.GetJobs() {
-		err = localPrint(ctx, job.GetLines())
-		if err != nil {
-			return err
+		if !*ackOnly {
+			err = localPrint(ctx, job.GetLines())
+			if err != nil {
+				return err
+			}
+		} else {
+			fmt.Printf("ACKing job %v without printing\n", job.GetId())
 		}
 
 		_, err = client.Ack(ctx, &pbp.AckRequest{
@@ -85,14 +94,18 @@ func runReceiptPrint() error {
 			return fmt.Errorf("ACK error on %v -> %w", job.GetId(), err)
 		}
 
-		// Allow time for the physical printer to finish printing before spooling the next job
-		time.Sleep(2 * time.Second)
+		if !*ackOnly {
+			// Allow time for the physical printer to finish printing before spooling the next job
+			time.Sleep(2 * time.Second)
+		}
 	}
 
 	return nil
 }
 
 func main() {
+	flag.Parse()
+
 	err := runReceiptPrint()
 	if err != nil {
 		log.Fatalf("Error: %v", err)

@@ -34,6 +34,9 @@ go build -o rprinter main.go
 
 # Run the printer agent
 ./rprinter
+
+# Acknowledge all queued print jobs without printing them
+./rprinter -ack_only
 ```
 
 ## Configuration
