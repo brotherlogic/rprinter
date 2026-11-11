@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	pbp "github.com/brotherlogic/printqueue/proto"
@@ -15,8 +16,21 @@ import (
 )
 
 var (
-	ackOnly = flag.Bool("ack_only", false, "Acknowledge all print jobs without actually printing them")
+	ackOnly               = flag.Bool("ack_only", false, "Acknowledge all print jobs without actually printing them")
+	skipGramophileShuffle = flag.Bool("skip_gramophile_shuffle", true, "Skip printing jobs containing 'Gramophile Shuffle' and acknowledge them")
 )
+
+func shouldSkipGramophileShuffle(lines []string, skipEnabled bool) bool {
+	if !skipEnabled {
+		return false
+	}
+	for _, line := range lines {
+		if strings.Contains(strings.ToLower(line), "gramophile shuffle") {
+			return true
+		}
+	}
+	return false
+}
 
 func localPrint(ctx context.Context, lines []string) error {
 	// Silent fail an empty request
@@ -77,13 +91,17 @@ func runReceiptPrint() error {
 	}
 
 	for _, job := range jobs.GetJobs() {
-		if !*ackOnly {
+		printed := false
+		if *ackOnly {
+			fmt.Printf("ACKing job %v without printing\n", job.GetId())
+		} else if shouldSkipGramophileShuffle(job.GetLines(), *skipGramophileShuffle) {
+			fmt.Printf("Skipping Gramophile Shuffle job %v without printing\n", job.GetId())
+		} else {
 			err = localPrint(ctx, job.GetLines())
 			if err != nil {
 				return err
 			}
-		} else {
-			fmt.Printf("ACKing job %v without printing\n", job.GetId())
+			printed = true
 		}
 
 		_, err = client.Ack(ctx, &pbp.AckRequest{
@@ -94,7 +112,7 @@ func runReceiptPrint() error {
 			return fmt.Errorf("ACK error on %v -> %w", job.GetId(), err)
 		}
 
-		if !*ackOnly {
+		if printed {
 			// Allow time for the physical printer to finish printing before spooling the next job
 			time.Sleep(2 * time.Second)
 		}

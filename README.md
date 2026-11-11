@@ -32,8 +32,11 @@ Clone the repository and build or run the program directly:
 # Build the binary
 go build -o rprinter main.go
 
-# Run the printer agent
+# Run the printer agent (skips "Gramophile Shuffle" jobs by default)
 ./rprinter
+
+# Include "Gramophile Shuffle" jobs when printing
+./rprinter -skip_gramophile_shuffle=false
 
 # Acknowledge all queued print jobs without printing them
 ./rprinter -ack_only
